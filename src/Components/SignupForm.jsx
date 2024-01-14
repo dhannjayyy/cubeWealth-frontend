@@ -1,8 +1,10 @@
 import React, { useRef, useState } from "react";
 import AsyncFetch from "../helper/AsyncFetch";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useRegister from "../helper/useRegister";
 
 const SignupForm = () => {
+  const navigate = useNavigate();
   const formResult = useRef();
   const [formState, setFormState] = useState({
     email: "",
@@ -20,16 +22,9 @@ const SignupForm = () => {
 
   const handleFormSubmitRequest = async (e) => {
     e.preventDefault();
-    const [resultStatus, message] = await AsyncFetch(
-      "register",
-      formState,
-      "POST"
-    );
-    console.log(message)
+    const [resultStatus, message] = await useRegister(formState);
     if (resultStatus == 201) {
-      formResult.current.innerText = message;
-      formResult.current.style.color = "green";
-      setFormState({ email: "", password: "" });
+      navigate("/login");
     } else {
       formResult.current.innerText = message;
       formResult.current.style.color = "red";

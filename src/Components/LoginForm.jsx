@@ -1,9 +1,18 @@
 import React, { useRef, useState } from "react";
 import AsyncFetch from "../helper/AsyncFetch";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { getUser, setUser } from "../helper/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import appStore from "../helper/Store";
+import useLogin from "../helper/useLogin";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location?.state?.from?.pathname || "/login";
+  const dispatch = useDispatch();
   const formResult = useRef();
+  const user = useSelector(getUser);
   const [formState, setFormState] = useState({
     email: "",
     password: "",
@@ -20,14 +29,20 @@ const LoginForm = () => {
 
   const handleFormSubmitRequest = async (e) => {
     e.preventDefault();
-    const [resultStatus, message] = await AsyncFetch("auth", formState, "POST");
-    //checking result by status code
-    if (resultStatus == 200) {
-      formResult.current.innerText = "Logged In";
-      formResult.current.style.color = "green";
-    } else {
-      formResult.current.innerText = message;
-      formResult.current.style.color = "red";
+    try {
+      const [resultStatus, message] = await useLogin(formState);
+      //checking result by status code
+      if (resultStatus == 200) {
+        dispatch(setUser({ email: formState.email, accessToken: message }));
+        appStore.getState().user?.email
+          ? navigate("/tasks")
+          : navigate(from, { replace: true });
+      } else {
+        formResult.current.innerText = message;
+        formResult.current.style.color = "red";
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
