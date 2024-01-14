@@ -7,7 +7,6 @@ import useFetchTasks from "../helper/useFetchTasks";
 
 const TaskForm = () => {
   const user = useSelector(getUser);
-  const currenTasks = useSelector(getTasks);
   const dispatch = useDispatch();
   const formResult = useRef();
   const [formState, setFormState] = useState({
@@ -22,7 +21,6 @@ const TaskForm = () => {
         formState,
         user?.accessToken
       );
-      console.log(resultStatus == 200, message);
       if (resultStatus == 200) {
         const [status, response] = await useFetchTasks(user?.accessToken);
         if (status == 200) {
@@ -55,7 +53,7 @@ const TaskForm = () => {
   };
 
   return (
-    <form onSubmit={(e) => handleFormSubmitRequest(e)}>
+    <form onSubmit={(e) => handleFormSubmitRequest(e)} className="bg-theme-black-800">
       <div className="flex flex-col">
         <input
           type="text"

@@ -53,10 +53,11 @@ const Tasks = () => {
       </div>
       <div className="flex gap-4 max-w-[1440px] w-[90%] flex-wrap mx-auto">
         {tasksData?.tasks?.length ? (
-          tasksData?.tasks?.map((task, index) => {
+          tasksData?.tasks?.map((task) => {
             return (
               <TaskCard
                 key={task.task_id}
+                task_id={task.task_id}
                 title={task.title}
                 description={task.description}
               />
