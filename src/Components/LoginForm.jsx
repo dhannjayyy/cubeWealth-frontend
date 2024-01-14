@@ -12,7 +12,6 @@ const LoginForm = () => {
   const from = location?.state?.from?.pathname || "/login";
   const dispatch = useDispatch();
   const formResult = useRef();
-  const user = useSelector(getUser);
   const [formState, setFormState] = useState({
     email: "",
     password: "",
