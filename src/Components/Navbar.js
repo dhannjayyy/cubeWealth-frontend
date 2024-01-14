@@ -10,9 +10,11 @@ const Navbar = () => {
             className="w-[40%]"
             alt="cube wealth icon"
           /> */}
-          <h2 className="text-2xl font-bold uppercase">Tasks<br/> Manager</h2>
+          <h2 className="text-2xl font-bold uppercase">
+            Tasks
+            <br /> Manager
+          </h2>
         </li>
-
       </ul>
     </nav>
   );
