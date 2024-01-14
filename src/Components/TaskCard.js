@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "../helper/userSlice";
 import useDeleteTask from "../helper/useDeleteTask";
 import { deleteTask } from "../helper/tasksSlice";
+import TaskForm from "./taskForm";
 
 const TaskCard = ({ title, description, task_id }) => {
   const dispatch = useDispatch();
@@ -11,6 +12,7 @@ const TaskCard = ({ title, description, task_id }) => {
   const user = useSelector(getUser);
 
   const [modal, setModal] = useState(false);
+  const [updateTaskModal, setupdateTaskModal] = useState(false);
 
   const deleteTaskHandler = async () => {
     try {
@@ -35,6 +37,7 @@ const TaskCard = ({ title, description, task_id }) => {
       <p className="mt-4">{description}</p>
       <div className="flex justify-start py-4 gap-3">
         <button
+          onClick={() => setupdateTaskModal(true)}
           type="submit"
           className="theme-background-green py-2 px-4 text-black font-bold rounded-lg uppercase  block"
         >
@@ -81,6 +84,23 @@ const TaskCard = ({ title, description, task_id }) => {
             </div>
           </div>
           <div ref={deleteMessageRef}></div>
+        </Modal>
+      )}
+      {updateTaskModal && (
+        <Modal>
+          <Modal.Title
+            title={"Update Task"}
+            onClose={() => setupdateTaskModal(false)}
+          />
+          <div className="p-6">
+            <TaskForm
+              title={title}
+              description={description}
+              operation="UPDATE"
+              taskId={task_id}
+              modalClose={()=>setupdateTaskModal(false)}
+            />
+          </div>
         </Modal>
       )}
     </div>

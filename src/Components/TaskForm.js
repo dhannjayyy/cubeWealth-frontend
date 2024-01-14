@@ -2,41 +2,62 @@ import React, { useRef, useState } from "react";
 import useTaskCreation from "../helper/useTaskCreation";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser } from "../helper/userSlice";
-import { addTasks, getTasks } from "../helper/tasksSlice";
+import { addTasks, updateTask } from "../helper/tasksSlice";
 import useFetchTasks from "../helper/useFetchTasks";
+import useTaskUpdate from "../helper/useTaskUpdate";
 
-const TaskForm = () => {
+const TaskForm = ({
+  title = "",
+  description = "",
+  operation = "ADD",
+  taskId = "",
+  modalClose = "",
+}) => {
   const user = useSelector(getUser);
   const dispatch = useDispatch();
   const formResult = useRef();
   const [formState, setFormState] = useState({
-    title: "",
-    description: "",
+    title: title,
+    description: description,
   });
 
   const handleFormSubmitRequest = async (e) => {
     e.preventDefault();
     try {
-      const [resultStatus, message] = await useTaskCreation(
-        formState,
-        user?.accessToken
-      );
-      if (resultStatus == 200) {
-        const [status, response] = await useFetchTasks(user?.accessToken);
-        if (status == 200) {
-          dispatch(addTasks({ tasks: response.tasks }));
-        }
+      if (operation === "ADD") {
+        const [resultStatus, message] = await useTaskCreation(
+          formState,
+          user?.accessToken
+        );
+        if (resultStatus == 200) {
+          const [status, response] = await useFetchTasks(user?.accessToken);
+          if (status == 200) {
+            dispatch(addTasks({ tasks: response.tasks }));
+          }
 
-        setFormState({
-          title: "",
-          description: "",
-        });
-        formResult.current.innerText =
-          "New task added. You can close the modal or add another task";
-        formResult.current.style.color = "green";
-      } else {
-        formResult.current.innerText = message;
-        formResult.current.style.color = "red";
+          setFormState({
+            title: "",
+            description: "",
+          });
+          formResult.current.innerText =
+            "New task added. You can close the modal or add another task";
+          formResult.current.style.color = "green";
+        } else {
+          formResult.current.innerText = message;
+          formResult.current.style.color = "red";
+        }
+      } else if (operation === "UPDATE") {
+        const [resultStatus, message] = await useTaskUpdate(
+          { ...formState, taskId: taskId },
+          user?.accessToken
+        );
+        if (resultStatus == 200) {
+          dispatch(updateTask({ ...formState, task_id: taskId }));
+          modalClose();
+        } else {
+          formResult.current.innerText = message;
+          formResult.current.style.color = "red";
+        }
       }
     } catch (error) {
       console.log(error);
@@ -53,7 +74,10 @@ const TaskForm = () => {
   };
 
   return (
-    <form onSubmit={(e) => handleFormSubmitRequest(e)} className="bg-theme-black-800">
+    <form
+      onSubmit={(e) => handleFormSubmitRequest(e)}
+      className="bg-theme-black-800"
+    >
       <div className="flex flex-col">
         <input
           type="text"
